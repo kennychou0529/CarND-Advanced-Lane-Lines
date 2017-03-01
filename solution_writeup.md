@@ -5,7 +5,7 @@
 
 <!-- **Advanced Lane Finding Project** -->
 
-The goals / steps of this project are the following:
+The following are the goals and steps of this project:
 
 1. Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 2. Apply a distortion correction to raw images.
@@ -27,6 +27,11 @@ The goals / steps of this project are the following:
 [image6]: ./output_images/rgb_yellow_threshold.png " "
 [image7]: ./output_images/hls_yellow_threshold.png " "
 [image8]: ./output_images/warp_verify.png "Perspective Transform Output"
+[image9]: ./output_images/lower_half_n_histogram.png "Lower Half Image and Histogram"
+[image10]: ./output_images/plotlines_on_bin_img.png "Lines fitted on lane pixels"
+[image11]: ./output_images/curvature_formula.png "Formula for Radius of Curvature"
+[image12]: ./output_images/final_result.png "Lanes Projected on Original Image"
+
 <!-- [video1]: ./output_images/rgb_yellow_threshold.png " " -->
 
 #### This writeup explains the steps I followed in my implementation by following the [Rubric Points](https://review.udacity.com/#!/rubrics/571/view)
@@ -37,6 +42,7 @@ The goals / steps of this project are the following:
 ####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point. -->  
 
 <!-- You're reading it! -->
+
 ###1.0 Camera Calibration
 
 ####Computation of camera calibration matrix and distortion coefficients given a set of chessboard images
@@ -54,9 +60,10 @@ I demonstrated the distortion correction on one the test images. The result is s
 
 ![alt text][image2]
 
-###2.0 Image Thresholding
-####Use of color transforms, and gradients to create a thresholded binary image.
 
+###2.0 Image Thresholding
+
+####Use of color transforms, and gradients to create a thresholded binary image.
 <!-- ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images) -->
 
@@ -78,15 +85,17 @@ From observing and earlier trials, I realized the best way to detect lane lines 
 The code for thresholding is contained in the threshold_colours() function of the 6th cell in the pipeline_sessions.ipnyb file
 
 See Images below for output of thresholding from each colour space
+
 ![alt text][image5]
 
 ![alt text][image6]
 
 ![alt text][image7]
 
-###3. Perspective Transform
-####Apply a perspective transform to rectify binary image ("birds-eye view")
 
+###3.0 Perspective Transform
+
+####Apply a perspective transform to rectify binary image ("birds-eye view")
 <!-- Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image. -->
 
 I loaded a test image with straight lines, to obtain points on the road plane. Points were manually picked from the straight road lines. I also chose destination points to transform to a birds eye view. This operation is in the Perspective Transform section (3.0)　of the pipeline_sessions.ipynb file.
@@ -121,31 +130,107 @@ To verify the perspective transform, I drew line on points and transformed it to
 
 ![alt text][image8]
 
-####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+###4.0 Fit Lane Lines
 
-![alt text][image5]
+####Detect lane pixels and fit to find the lane boundary
+<!-- Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial? -->
 
-####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+The following are steps I took in detecting lane line pixels and fitting lines to find lane boundary. Codes can be found in the same section in pipeline_sessions.ipynb file
 
-I did this in lines # through # in my code in `my_other_file.py`
+I took a histogram along all columns in the lower half of the image to find portions of high contrast, which signifies lane lines.
 
-####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+![alt text][image9]
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+Next I implement a window search by finding the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines. Then I create a window that searches from the bottom of the image to the top to find all non zero pixels within the window. This is done in the code snippet below
 
-![alt text][image6]
+'''
+# Step through the windows one by one
+for window in range(nwindows):
+    # Identify window boundaries in x and y (and right and left)
+    win_y_low = warped.shape[0] - (window+1)*window_height
+    win_y_high = warped.shape[0] - window*window_height
+    win_xleft_low = leftx_current - margin
+    win_xleft_high = leftx_current + margin
+    win_xright_low = rightx_current - margin
+    win_xright_high = rightx_current + margin
+
+    # Draw the windows on the visualization image
+    cv2.rectangle(out_img,(win_xleft_low,win_y_low),(win_xleft_high,win_y_high),(0,255,0), 5) 
+    cv2.rectangle(out_img,(win_xright_low,win_y_low),(win_xright_high,win_y_high),(0,255,0), 5) 
+
+    # Identify the nonzero pixels in x and y within the window
+    good_left_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xleft_low) & (nonzerox < win_xleft_high)).nonzero()[0]
+    good_right_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xright_low) & (nonzerox < win_xright_high)).nonzero()[0]
+    # Append these indices to the lists
+    left_lane_inds.append(good_left_inds)
+    right_lane_inds.append(good_right_inds)
+    # If you found > minpix pixels, recenter next window on their mean position
+    if len(good_left_inds) > minpix:
+        leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
+    if len(good_right_inds) > minpix:        
+        rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
+'''
+
+I then use these points to fit a 2nd order polynomial for both left and right lanes like shown in the image below.
+<!-- Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this: -->
+
+![alt text][image10]
+
+In subsequent frames, we only update the lane line pixels and do not need to do sliding window search again.
+
+
+
+###5.0 Curvature and Vehicle Position
+
+####Determine the curvature of the lane and vehicle position with respect to center
+<!-- Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center. -->
+
+I used the formula below to find the radius of curvature.
+
+![alt text][image11]
+
+A and B are the coefficients of the derivative of the second order polynomials for finding the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum, which corresponds to the base of the image like thus;
+
+'''
+y_eval = np.max(ploty)
+left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
+right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
+print(left_curverad, right_curverad)
+'''
+I converted pixel values to meters, as in the measurement on the road using the following:
+
+'''
+# Define conversions in x and y from pixels space to meters
+ym_per_pix = 30/720.0 # meters per pixel in y dimension
+xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
+'''
+
+<!-- I did this in lines # through # in my code in `my_other_file.py` -->
+
+###6.0 Lane Result
+
+####Warp the detected lane boundaries back onto the original image
+<!-- Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly. -->
+<!-- I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image: -->
+I warped the result back unto the original image using the inverse transformation matrix calculated earlier. The result is shown below:
+
+![alt text][image12]
+
+Next is to display radius of curvature and car offset from the center on the image. I did this in the final video
 
 ---
 
-###Pipeline (video)
+###Pipeline Result (video)
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+<!-- Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!). -->
 
-Here's a [link to my video result](./project_video.mp4)
+Find in the link a final output of my pipeline for the project video
+
+[Project Video Result](./project_video.mp4)
 
 ---
+
 
 ###Discussion
 
