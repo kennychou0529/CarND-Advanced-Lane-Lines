@@ -36,7 +36,7 @@ The following are the goals and steps of this project:
 
 #### This writeup explains the steps I followed in my implementation by following the [Rubric Points](https://review.udacity.com/#!/rubrics/571/view)
 
-*The codes for steps on single image pipeline are is IPython notebook, "pipeline_session.ipynb", while code for the implementation on project video is in "lane_line.py"*
+*The codes for steps on single image pipeline are is IPython notebook, [pipeline_session.ipynb](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/pipeline_session.ipynb), while code for the implementation on project video is in [lane_line.py](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/lane_line.py)*
 
 ---
 <!-- ###Writeup / README
@@ -73,13 +73,13 @@ Before applying image thresholding, I investigated how the image appears in vari
 
 ![alt text][image4]
 
-From observing and earlier trials, I realized the best way to detect lane lines is to use the colour information. Since lane lines are usually yellow and white, it will be effective to detect only white and yellow patches of road. I therefore decided to use colour thresholding. I also realized the RGB channel is more effective in detecting the white patches, since the luminosity is not a separate channel, and the HLS channel is effect for detecting the yellow colours, since only channel represents the Hue values. The following table shows the values I used to threshold white and yellow in the respective colour channels.
+From observing and earlier trials, I realized the best way to detect lane lines is to use the colour information. Since lane lines are usually yellow and white, it will be effective to detect only white and yellow patches of road. I therefore decided to use colour thresholding. I also realized the RGB channel is more effective in detecting the white patches, since the luminosity is not a separate channel, and the HLS channel is effect for detecting the yellow colours, since only one channel represents the Hue values. The following table shows the values I used to threshold white and yellow in the respective colour channels.
 
 | Colour 		| Threshold Values   										| 
 |:-------------:|:--------------------------------------------------------:	| 
-| RGB White     | Lower = {100, 100, 190}, Upper = {255, 255, 255}       	| 
-| RGB Yellow 	| Lower = {230, 180, 20}, Upper = {255, 255, 255} 			|
-| HLS Yellow 	| Lower = {20, 100, 30}, Upper = {45, 200, 255}     		|
+| RGB White     | Lower = {100, 100, 200}, Upper = {255, 255, 255}       	| 
+| RGB Yellow 	| Lower = {225, 180, 0}, Upper = {255, 255, 170} 			|
+| HLS Yellow 	| Lower = {20, 120, 80}, Upper = {45, 200, 255}     		|
 
 The code for thresholding is contained in the threshold_colours() function of the 6th cell in the pipeline_sessions.ipnyb file.
 
@@ -143,7 +143,7 @@ I took a histogram along all columns in the lower half of the image to find port
 
 ![alt text][image9]
 
-Next I implement a window search by finding the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines. Then I create a window that searches from the bottom of the image to the top to find all non zero pixels within the window. This is done in the code snippet below
+Next I implement a window search by finding the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines. Then I create a window that searches from the bottom of the image to the top to find all non zero pixels within the window. This was done using the code snippet below
 
 
 
@@ -175,8 +175,12 @@ Next I implement a window search by finding the peak of the left and right halve
 
 
 
-I then use these points to fit a 2nd order polynomial for both left and right lanes like shown in the image below.
+I then use these points to fit a 2nd order polynomial for both left and right lanes like shown below.
 <!-- Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this: -->
+
+	# Fit a second order polynomial to each
+	left_fit = np.polyfit(lefty, leftx, 2)
+	right_fit = np.polyfit(righty, rightx, 2)
 
 ![alt text][image10]
 
@@ -193,7 +197,7 @@ I used the formula below to find the radius of curvature.
 
 ![alt text][image11]
 
-A and B are the coefficients of the derivative of the second order polynomials for finding the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum, which corresponds to the base of the image like thus;
+A and B are the coefficients of the derivative of the second order polynomials used to find the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum, which corresponds to the base of the image like thus;
 
 
 
@@ -241,7 +245,7 @@ Find in the link below, the final output of my pipeline for the project video
 #### Insights and observations from the project
 <!-- 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust? -->
 
-The most challenging part of this model is coming up with a lane line detection or thresholding algorithm that is robust for the project video and also good for the challenge video. I finally settled with using colour thresholding and none of line gradient detection algorithm. Though the later can still be added to make pipeline more robust.
+The most challenging part of this model is coming up with a lane line detection or thresholding algorithm that is robust for the project video and also good for the challenge video. I finally settled with using colour thresholding and none of line or brightness gradient since they are more affected by frame brightness and light conditions. The later can still be added to make pipeline more robust.
 
 The final pipeline works well for the project video but fails in the challenge videos for places where there are very high brightness and where the road is very curved. The window search could be replaced with a better algorithm.
 
