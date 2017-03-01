@@ -18,10 +18,10 @@ The following are the goals and steps of this project:
 
 [//]: # (Image References)
 
-[image1]: ./output_images/undistort_result1.png "Result of Distortion Correction on Chessboard Image"
+[image1]: ./output_images/undistort_result1.jpg "Result of Distortion Correction on Chessboard Image"
 [image2]: ./output_images/undistort_result2.jpg "Result of Distortion Correction on Road Image"
-[image3]: ./output_images/rgb_colourspace.jpg "Test Image Shown in RGB Colour Space"
-[image4]: ./output_images/hls_colourspace.jpg "Test Image Shown in HLS Colour Space"
+[image3]: ./output_images/rgb_colourspace.png "Test Image Shown in RGB Colour Space"
+[image4]: ./output_images/hls_colourspace.png "Test Image Shown in HLS Colour Space"
 
 [image5]: ./output_images/rgb_white_threshold.png " "
 [image6]: ./output_images/rgb_yellow_threshold.png " "
