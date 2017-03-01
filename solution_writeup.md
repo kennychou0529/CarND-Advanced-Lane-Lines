@@ -145,31 +145,33 @@ I took a histogram along all columns in the lower half of the image to find port
 Next I implement a window search by finding the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines. Then I create a window that searches from the bottom of the image to the top to find all non zero pixels within the window. This is done in the code snippet below
 
 '''
-# Step through the windows one by one
-for window in range(nwindows):
-    # Identify window boundaries in x and y (and right and left)
-    win_y_low = warped.shape[0] - (window+1)*window_height
-    win_y_high = warped.shape[0] - window*window_height
-    win_xleft_low = leftx_current - margin
-    win_xleft_high = leftx_current + margin
-    win_xright_low = rightx_current - margin
-    win_xright_high = rightx_current + margin
 
-    # Draw the windows on the visualization image
-    cv2.rectangle(out_img,(win_xleft_low,win_y_low),(win_xleft_high,win_y_high),(0,255,0), 5) 
-    cv2.rectangle(out_img,(win_xright_low,win_y_low),(win_xright_high,win_y_high),(0,255,0), 5) 
+	# Step through the windows one by one
+	for window in range(nwindows):
+	    # Identify window boundaries in x and y (and right and left)
+	    win_y_low = warped.shape[0] - (window+1)*window_height
+	    win_y_high = warped.shape[0] - window*window_height
+	    win_xleft_low = leftx_current - margin
+	    win_xleft_high = leftx_current + margin
+	    win_xright_low = rightx_current - margin
+	    win_xright_high = rightx_current + margin
 
-    # Identify the nonzero pixels in x and y within the window
-    good_left_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xleft_low) & (nonzerox < win_xleft_high)).nonzero()[0]
-    good_right_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xright_low) & (nonzerox < win_xright_high)).nonzero()[0]
-    # Append these indices to the lists
-    left_lane_inds.append(good_left_inds)
-    right_lane_inds.append(good_right_inds)
-    # If you found > minpix pixels, recenter next window on their mean position
-    if len(good_left_inds) > minpix:
-        leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
-    if len(good_right_inds) > minpix:        
-        rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
+	    # Draw the windows on the visualization image
+	    cv2.rectangle(out_img,(win_xleft_low,win_y_low),(win_xleft_high,win_y_high),(0,255,0), 5) 
+	    cv2.rectangle(out_img,(win_xright_low,win_y_low),(win_xright_high,win_y_high),(0,255,0), 5) 
+
+	    # Identify the nonzero pixels in x and y within the window
+	    good_left_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xleft_low) & (nonzerox < win_xleft_high)).nonzero()[0]
+	    good_right_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & (nonzerox >= win_xright_low) & (nonzerox < win_xright_high)).nonzero()[0]
+	    # Append these indices to the lists
+	    left_lane_inds.append(good_left_inds)
+	    right_lane_inds.append(good_right_inds)
+	    # If you found > minpix pixels, recenter next window on their mean position
+	    if len(good_left_inds) > minpix:
+	        leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
+	    if len(good_right_inds) > minpix:        
+	        rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
+
 '''
 
 I then use these points to fit a 2nd order polynomial for both left and right lanes like shown in the image below.
@@ -193,17 +195,22 @@ I used the formula below to find the radius of curvature.
 A and B are the coefficients of the derivative of the second order polynomials for finding the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum, which corresponds to the base of the image like thus;
 
 '''
-y_eval = np.max(ploty)
-left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
-right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
-print(left_curverad, right_curverad)
+
+	y_eval = np.max(ploty)
+	left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
+	right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
+	print(left_curverad, right_curverad)
+
 '''
+
 I converted pixel values to meters, as in the measurement on the road using the following:
 
 '''
-# Define conversions in x and y from pixels space to meters
-ym_per_pix = 30/720.0 # meters per pixel in y dimension
-xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
+
+	# Define conversions in x and y from pixels space to meters
+	ym_per_pix = 30/720.0 # meters per pixel in y dimension
+	xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
+
 '''
 
 <!-- I did this in lines # through # in my code in `my_other_file.py` -->
