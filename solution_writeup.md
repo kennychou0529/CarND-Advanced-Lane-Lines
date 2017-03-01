@@ -60,6 +60,7 @@ I demonstrated the distortion correction on one the test images. The result is s
 
 ![alt text][image2]
 
+---
 
 ###2.0 Image Thresholding
 
@@ -92,6 +93,7 @@ See Images below for output of thresholding from each colour space
 
 ![alt text][image7]
 
+---
 
 ###3.0 Perspective Transform
 
@@ -130,6 +132,7 @@ To verify the perspective transform, I drew line on points and transformed it to
 
 ![alt text][image8]
 
+---
 
 ###4.0 Fit Lane Lines
 
@@ -144,7 +147,7 @@ I took a histogram along all columns in the lower half of the image to find port
 
 Next I implement a window search by finding the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines. Then I create a window that searches from the bottom of the image to the top to find all non zero pixels within the window. This is done in the code snippet below
 
-'''
+
 
 	# Step through the windows one by one
 	for window in range(nwindows):
@@ -172,7 +175,7 @@ Next I implement a window search by finding the peak of the left and right halve
 	    if len(good_right_inds) > minpix:        
 	        rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
 
-'''
+
 
 I then use these points to fit a 2nd order polynomial for both left and right lanes like shown in the image below.
 <!-- Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this: -->
@@ -181,7 +184,7 @@ I then use these points to fit a 2nd order polynomial for both left and right la
 
 In subsequent frames, we only update the lane line pixels and do not need to do sliding window search again.
 
-
+---
 
 ###5.0 Curvature and Vehicle Position
 
@@ -194,27 +197,26 @@ I used the formula below to find the radius of curvature.
 
 A and B are the coefficients of the derivative of the second order polynomials for finding the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum, which corresponds to the base of the image like thus;
 
-'''
+
 
 	y_eval = np.max(ploty)
 	left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
 	right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
 	print(left_curverad, right_curverad)
 
-'''
+
 
 I converted pixel values to meters, as in the measurement on the road using the following:
 
-'''
+
 
 	# Define conversions in x and y from pixels space to meters
 	ym_per_pix = 30/720.0 # meters per pixel in y dimension
 	xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
 
-'''
+---
 
 <!-- I did this in lines # through # in my code in `my_other_file.py` -->
-
 ###6.0 Lane Result
 
 ####Warp the detected lane boundaries back onto the original image
@@ -232,12 +234,11 @@ Next is to display radius of curvature and car offset from the center on the ima
 
 <!-- Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!). -->
 
-Find in the link a final output of my pipeline for the project video
+Find in the link below, the final output of my pipeline for the project video
 
 [Project Video Result](./project_video.mp4)
 
 ---
-
 
 ###Discussion
 
