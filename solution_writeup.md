@@ -28,7 +28,7 @@ The following are the goals and steps of this project:
 [image7]: ./output_images/hls_yellow_threshold.png " "
 [image8]: ./output_images/warp_verify.png "Perspective Transform Output"
 [image9]: ./output_images/lower_half_n_histogram.png "Lower Half Image and Histogram"
-[image10]: ./output_images/plotlines_on_bin_img.png "Lines fitted on lane pixels"
+[image10]: ./output_images/plotlines_on_bin_img.jpg "Lines fitted on lane pixels"
 [image11]: ./output_images/curvature_formula.png "Formula for Radius of Curvature"
 [image12]: ./output_images/final_result.png "Lanes Projected on Original Image"
 
@@ -38,17 +38,16 @@ The following are the goals and steps of this project:
 
 ---
 <!-- ###Writeup / README
-
 ####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point. -->  
-
 <!-- You're reading it! -->
 
 ###1.0 Camera Calibration
 
 ####Computation of camera calibration matrix and distortion coefficients given a set of chessboard images
 
-The code for this step is contained in the second code cell of the IPython notebook located in "pipeline_on_test_images.ipynb"
-Here, I prepared 'object points' which are points in real world space (x, y, z) coordinates of the chessboard corners. Since we assume the chessboard is on a flat plane, then z=0 so we only consider (x, y). To do this, I went through each chessboard image in the image folder and use the opencv function cv2.findChessboardCorners() to find the corners of the chessboard. I then append these corners to the image points (imgpoints) array to keep the chessboard corners. I also replicated the object points and append to 'objpoints' array to correspond to the found image points.
+*Note: The codes for steps on single image pipeline are is IPython notebook, "pipeline_session.ipynb", while code for the implementation on project video is in "lane_line.py"*
+
+Starting with camera calibration, see cell 2 for codes in this step. Here, I prepared 'object points' which are points in real world space (x, y, z) coordinates of the chessboard corners. Since we assume the chessboard is on a flat plane, then z=0 so we only consider (x, y). To do this, I went through each chessboard image in the image folder and use the opencv function cv2.findChessboardCorners() to find the corners of the chessboard. I then append these corners to the image points (imgpoints) array to keep the chessboard corners. I also replicated the object points and append to 'objpoints' array to correspond to the found image points.
 After this, I used the outputs 'objpoints' and 'imgpoints' to compute the camera calibration matrix and distortion coefficients needed for correcting distortion on images by using the opencv cv2.calibrateCamera() function.
 To be sure about the success of the calibration, I tested it on one of the chessboard images to correct its distortion by using the cv2.undistort() function. The figure below shows the image before distortion correction and after correction.x
 
@@ -82,8 +81,7 @@ From observing and earlier trials, I realized the best way to detect lane lines 
 | RGB Yellow 	| Lower = {230, 180, 20}, Upper = {255, 255, 255} 			|
 | HLS Yellow 	| Lower = {20, 100, 30}, Upper = {45, 200, 255}     		|
 
-
-The code for thresholding is contained in the threshold_colours() function of the 6th cell in the pipeline_sessions.ipnyb file
+The code for thresholding is contained in the threshold_colours() function of the 6th cell in the pipeline_sessions.ipnyb file.
 
 See Images below for output of thresholding from each colour space
 
@@ -100,7 +98,7 @@ See Images below for output of thresholding from each colour space
 ####Apply a perspective transform to rectify binary image ("birds-eye view")
 <!-- Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image. -->
 
-I loaded a test image with straight lines, to obtain points on the road plane. Points were manually picked from the straight road lines. I also chose destination points to transform to a birds eye view. This operation is in the Perspective Transform section (3.0)　of the pipeline_sessions.ipynb file.
+I loaded a test image with straight lines, to obtain points on the road plane. Points were manually picked from image with straight road lines. I also chose destination points to transform to a birds eye view. This operation is in the Perspective Transform section (3.0)　of the pipeline_sessions.ipynb file.
 
 See below, the points I chose for source and destination:
 
