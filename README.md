@@ -4,7 +4,7 @@
 
 **In this project, the goal is to write a software pipeline to identify the lane boundaries in a video.**
 
-A summary of the solution is contained in [solution_writeup.md](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/solution_writeup.mdd) and ipython notebook [pipeline_session.ipynb](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/pipeline_session.ipynb). The implementation of the pipeline on video is contained in [lane_line.py](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/lane_line.py)
+A summary of the solution is contained in [solution_writeup.md](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/solution_writeup.md) and ipython notebook [pipeline_session.ipynb](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/pipeline_session.ipynb). The implementation of the pipeline on video is contained in [lane_line.py](https://github.com/toluwajosh/CarND-Advanced-Lane-Lines/blob/master/lane_line.py)
 
 See final output video here: [Project Video]()
 
