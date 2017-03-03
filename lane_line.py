@@ -65,7 +65,7 @@ class Line():
         self.xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
 
 
-    def thresh_bin_im(self, image, s_thresh=(170, 255), sxl_thresh=(20, 100), sxr_thresh=(20, 100), kernel=5):
+    def thresh_bin_im(self, image):
         """
         Return the colour thresholds binary for L, S and R channels in an image
         img: RGB image
